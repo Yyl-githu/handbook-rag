@@ -1,37 +1,71 @@
 services:
-  # PostgreSQL with PGVector for vector storage and chat memory
+  # Spring Boot application with the Vue frontend baked in.
+  # Started with: docker compose up -d --build
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: handbook-rag:3.0.1
+    container_name: ragdemo-app
+    # Everything from .env is handed to the container: LLM_*, APP_*, RERANK_* ...
+    env_file:
+      - .env
+    environment:
+      - "SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-aliyun}"
+      # Inside the compose network the database is "pgvector", not localhost.
+      - "DB_URL=jdbc:postgresql://pgvector:5432/ragdemo"
+      - "DB_USER=user"
+      - "DB_PASSWORD=${POSTGRES_PASSWORD:?请在 .env 里设置 POSTGRES_PASSWORD}"
+      # The container must not try to start its own compose stack.
+      - "SPRING_DOCKER_COMPOSE_ENABLED=false"
+      - "TZ=Asia/Shanghai"
+    ports:
+      - "8080:8080"
+    depends_on:
+      pgvector:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      # bash is present in the temurin image; curl/wget are not guaranteed.
+      test: ["CMD-SHELL", "timeout 3 bash -c '</dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # PostgreSQL + pgvector. The first start imports db/ragdemo.dump, so a fresh clone
+  # already has the 208 handbook chunks instead of an empty database.
   pgvector:
     image: "pgvector/pgvector:0.8.7-pg17"
     container_name: ragdemo-pgvector
     environment:
       - "POSTGRES_DB=ragdemo"
-      - "POSTGRES_PASSWORD=password"
       - "POSTGRES_USER=user"
-    labels:
-      - "org.springframework.boot.service-connection=postgres"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?请在 .env 里设置 POSTGRES_PASSWORD}"
     ports:
       - "5432:5432"
     volumes:
       - pgvector_data:/var/lib/postgresql/data
+      # Runs once, only while the data directory is empty.
+      - ./db:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d ragdemo"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 20s
 
-  # Open WebUI - Chat interface for testing (optional)
-  # Access at http://localhost:3000
+  # Open WebUI - optional chat interface on top of the /v1 endpoint.
+  # docker compose --profile ui up -d   ->  http://localhost:3000
   open-webui:
     image: "ghcr.io/open-webui/open-webui:v0.11.4"
     container_name: ragdemo-openwebui
     profiles:
       - ui
     environment:
-      # Configure OpenAI-compatible connection to our Spring AI backend
       - OPENAI_API_BASE_URLS=http://host.docker.internal:8080/v1
       - OPENAI_API_KEYS=sk-unused
       - WEBUI_AUTH=false
-      # Disable Ollama since we're only using OpenAI-compatible API
       - ENABLE_OLLAMA_API=false
     ports:
       - "3000:8080"

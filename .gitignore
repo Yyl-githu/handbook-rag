@@ -30,9 +30,23 @@ build/
 # Local environment / secrets
 .env
 .env.*
+# ...but the template must be committed
+!.env.example
 
 # macOS metadata files
 .DS_Store
 
 # VS Code settings
 .vscode/
+
+# Frontend dependencies and local run logs
+web/node_modules/
+web/dist/
+run.log
+
+# Frontend build output (vite writes here; the Dockerfile rebuilds it)
+src/main/resources/static/
+
+# Offline delivery bundles are distributed separately, not via git
+handbook-images.tar
+deploy/handbook-images.tar
