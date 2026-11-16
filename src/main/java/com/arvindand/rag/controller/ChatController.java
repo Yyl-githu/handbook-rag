@@ -3,8 +3,10 @@ package com.arvindand.rag.controller;
 import com.arvindand.rag.model.ChatRequest;
 import com.arvindand.rag.model.ChatResponse;
 import com.arvindand.rag.service.ChatResponseReader;
+import com.arvindand.rag.service.QueryGate;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Locale;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ChatClientResponse;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -35,24 +37,42 @@ public class ChatController {
   private final ChatClient chatClient;
   private final ChatClient simpleChatClient;
   private final ChatResponseReader reader;
+  private final QueryGate gate;
 
   public ChatController(
       @Qualifier("chatClient") ChatClient chatClient,
       @Qualifier("simpleChatClient") ChatClient simpleChatClient,
-      ChatResponseReader reader) {
+      ChatResponseReader reader,
+      QueryGate gate) {
     this.chatClient = chatClient;
     this.simpleChatClient = simpleChatClient;
     this.reader = reader;
+    this.gate = gate;
   }
 
   /**
    * Handles a chat request, optionally grounded in retrieved documents.
+   *
+   * <p>With RAG enabled the message passes through {@link QueryGate} first: out-of-scope requests
+   * are refused, greetings are answered directly, and questions the handbook cannot support are
+   * answered with an explicit "not covered" plus the closest chapters — all without a model call.
    *
    * @param request the message, conversation id, and RAG toggle
    * @return the assistant response, including cited sources when RAG is used
    */
   @PostMapping
   public ChatResponse chat(@Valid @RequestBody ChatRequest request) {
+    if (request.useRag()) {
+      QueryGate.Verdict verdict = gate.check(request.message());
+      if (verdict.kind() != QueryGate.Kind.RAG) {
+        return ChatResponse.gated(
+            verdict.reply(),
+            request.conversationId(),
+            verdict.suggestions(),
+            verdict.kind().name().toLowerCase(Locale.ROOT));
+      }
+    }
+
     ChatClient client = request.useRag() ? chatClient : simpleChatClient;
 
     ChatClientResponse response =
