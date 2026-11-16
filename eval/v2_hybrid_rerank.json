@@ -1,0 +1,545 @@
+{
+ "summary": {
+  "mode": "hybrid_rerank",
+  "topK": 8,
+  "total": 22,
+  "answerable": 17,
+  "negative": 5,
+  "gate_accuracy": 1.0,
+  "negative_rejection": 1.0,
+  "answerable_accepted": 1.0,
+  "hit@1": 1.0,
+  "hit@3": 1.0,
+  "mrr": 1.0,
+  "confusable_violations": [],
+  "by_hard_type": {
+   "confusable": {
+    "n": 6,
+    "gate_ok": 1.0,
+    "hit@1": 1.0,
+    "hit@3": 1.0,
+    "mrr": 1.0,
+    "top1_forbidden": []
+   },
+   "precise": {
+    "n": 6,
+    "gate_ok": 1.0,
+    "hit@1": 1.0,
+    "hit@3": 1.0,
+    "mrr": 1.0,
+    "top1_forbidden": []
+   },
+   "multi_hop": {
+    "n": 3,
+    "gate_ok": 1.0,
+    "hit@1": 1.0,
+    "hit@3": 1.0,
+    "mrr": 1.0,
+    "top1_forbidden": []
+   },
+   "regression": {
+    "n": 2,
+    "gate_ok": 1.0,
+    "hit@1": 1.0,
+    "hit@3": 1.0,
+    "mrr": 1.0,
+    "top1_forbidden": []
+   },
+   "negative": {
+    "n": 5,
+    "gate_ok": 1.0
+   }
+  },
+  "generated_at": "2026-11-14T22:32:48"
+ },
+ "results": [
+  {
+   "id": "HB2-C01",
+   "hard_type": "confusable",
+   "expect": "answer",
+   "question": "国家励志奖学金的奖励标准是多少？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.7294,
+   "suggestions": [],
+   "expected": [
+    "18"
+   ],
+   "ranked": [
+    "18",
+    "16",
+    "20",
+    "19"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "18",
+   "top1_forbidden": false,
+   "top1_cosine": 0.7294
+  },
+  {
+   "id": "HB2-C02",
+   "hard_type": "confusable",
+   "expect": "answer",
+   "question": "研究生国家奖学金博士和硕士分别是多少钱？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.612,
+   "suggestions": [],
+   "expected": [
+    "17"
+   ],
+   "ranked": [
+    "17",
+    "20",
+    "21"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "17",
+   "top1_forbidden": false,
+   "top1_cosine": 0.612
+  },
+  {
+   "id": "HB2-C03",
+   "hard_type": "confusable",
+   "expect": "answer",
+   "question": "国家奖学金的奖励标准是每人每年多少？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.7057,
+   "suggestions": [],
+   "expected": [
+    "16"
+   ],
+   "ranked": [
+    "16",
+    "18",
+    "17",
+    "20",
+    "21"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "16",
+   "top1_forbidden": false,
+   "top1_cosine": 0.7057
+  },
+  {
+   "id": "HB2-C04",
+   "hard_type": "confusable",
+   "expect": "answer",
+   "question": "十佳三好学生评选对获奖经历有什么额外要求？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.6722,
+   "suggestions": [],
+   "expected": [
+    "34"
+   ],
+   "ranked": [
+    "34",
+    "31",
+    "33",
+    "01",
+    "32"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "34",
+   "top1_forbidden": false,
+   "top1_cosine": 0.6506
+  },
+  {
+   "id": "HB2-C05",
+   "hard_type": "confusable",
+   "expect": "answer",
+   "question": "学生生活物价补贴每个月发多少钱？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.7403,
+   "suggestions": [],
+   "expected": [
+    "13"
+   ],
+   "ranked": [
+    "13",
+    "28",
+    "19",
+    "29",
+    "27"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "13",
+   "top1_forbidden": false,
+   "top1_cosine": 0.7403
+  },
+  {
+   "id": "HB2-C06",
+   "hard_type": "confusable",
+   "expect": "answer",
+   "question": "研究生通过生源地信用助学贷款每年最多能贷多少？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.6881,
+   "suggestions": [],
+   "expected": [
+    "22"
+   ],
+   "ranked": [
+    "22",
+    "23",
+    "24"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "22",
+   "top1_forbidden": false,
+   "top1_cosine": 0.6881
+  },
+  {
+   "id": "HB2-P01",
+   "hard_type": "precise",
+   "expect": "answer",
+   "question": "国家助学金的平均资助标准是每生每年多少元？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.6508,
+   "suggestions": [],
+   "expected": [
+    "19"
+   ],
+   "ranked": [
+    "19",
+    "20",
+    "24",
+    "22",
+    "23"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "19",
+   "top1_forbidden": false,
+   "top1_cosine": 0.6508
+  },
+  {
+   "id": "HB2-P02",
+   "hard_type": "precise",
+   "expect": "answer",
+   "question": "参加勤工助学每周和每月最多能工作多少小时？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.7497,
+   "suggestions": [],
+   "expected": [
+    "30"
+   ],
+   "ranked": [
+    "30",
+    "19"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "30",
+   "top1_forbidden": false,
+   "top1_cosine": 0.7497
+  },
+  {
+   "id": "HB2-P03",
+   "hard_type": "precise",
+   "expect": "answer",
+   "question": "学生申诉处理委员会接到书面申诉后多少日内作出复查结论？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.7098,
+   "suggestions": [],
+   "expected": [
+    "36"
+   ],
+   "ranked": [
+    "36",
+    "01",
+    "02",
+    "03",
+    "35"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "36",
+   "top1_forbidden": false,
+   "top1_cosine": 0.6591
+  },
+  {
+   "id": "HB2-P04",
+   "hard_type": "precise",
+   "expect": "answer",
+   "question": "学生违纪处分一共有哪几种？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.709,
+   "suggestions": [],
+   "expected": [
+    "35"
+   ],
+   "ranked": [
+    "35",
+    "01"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "35",
+   "top1_forbidden": false,
+   "top1_cosine": 0.709
+  },
+  {
+   "id": "HB2-P05",
+   "hard_type": "precise",
+   "expect": "answer",
+   "question": "第二课堂最低要修满多少学分才能毕业？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.6425,
+   "suggestions": [],
+   "expected": [
+    "37"
+   ],
+   "ranked": [
+    "37",
+    "38"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "37",
+   "top1_forbidden": false,
+   "top1_cosine": 0.6096
+  },
+  {
+   "id": "HB2-P06",
+   "hard_type": "precise",
+   "expect": "answer",
+   "question": "学生证丢失了应该怎么补办？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.7131,
+   "suggestions": [],
+   "expected": [
+    "09"
+   ],
+   "ranked": [
+    "09",
+    "02",
+    "01",
+    "22"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "09",
+   "top1_forbidden": false,
+   "top1_cosine": 0.7131
+  },
+  {
+   "id": "HB2-N01",
+   "hard_type": "negative",
+   "expect": "no_answer",
+   "question": "学校食堂几点开门？",
+   "decision": "no_answer",
+   "gate_ok": true,
+   "best_cosine": 0.4287,
+   "suggestions": [
+    "贵州财经大学学生管理规定（修订）",
+    "贵州财经大学本科学籍管理办法（试行）",
+    "贵州财经大学学生宿舍管理规定（修订）"
+   ]
+  },
+  {
+   "id": "HB2-N02",
+   "hard_type": "negative",
+   "expect": "no_answer",
+   "question": "校车时刻表在哪里查？",
+   "decision": "no_answer",
+   "gate_ok": true,
+   "best_cosine": 0.4072,
+   "suggestions": [
+    "贵州财经大学学生证、校徽管理办法（修订）",
+    "贵州财经大学学生勤工助学管理办法（修订）"
+   ]
+  },
+  {
+   "id": "HB2-N03",
+   "hard_type": "negative",
+   "expect": "no_answer",
+   "question": "校园网的密码怎么改？",
+   "decision": "no_answer",
+   "gate_ok": true,
+   "best_cosine": 0.3849,
+   "suggestions": [
+    "贵州财经大学学生证、校徽管理办法（修订）",
+    "贵州财经大学学生违纪处分管理办法（修订）"
+   ]
+  },
+  {
+   "id": "HB2-N04",
+   "hard_type": "negative",
+   "expect": "no_answer",
+   "question": "今年学校的录取分数线是多少？",
+   "decision": "no_answer",
+   "gate_ok": true,
+   "best_cosine": 0.3975,
+   "suggestions": [
+    "贵州财经大学学生管理规定（修订）",
+    "贵州财经大学新生入学资格审查工作管理办法（修订）"
+   ]
+  },
+  {
+   "id": "HB2-N05",
+   "hard_type": "negative",
+   "expect": "no_answer",
+   "question": "宿舍报修电话是多少？",
+   "decision": "no_answer",
+   "gate_ok": true,
+   "best_cosine": 0.5523,
+   "suggestions": [
+    "贵州财经大学学生宿舍管理规定（修订）"
+   ]
+  },
+  {
+   "id": "HB2-M01",
+   "hard_type": "multi_hop",
+   "expect": "answer",
+   "question": "家里经济困难想申请国家助学金，需要先通过困难认定吗？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.6696,
+   "suggestions": [],
+   "expected": [
+    "15",
+    "19"
+   ],
+   "ranked": [
+    "19",
+    "16",
+    "15"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "19",
+   "top1_forbidden": false,
+   "top1_cosine": 0.6696
+  },
+  {
+   "id": "HB2-M02",
+   "hard_type": "multi_hop",
+   "expect": "answer",
+   "question": "受到记过处分还能参加奖学金评选吗？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.64,
+   "suggestions": [],
+   "expected": [
+    "25",
+    "35"
+   ],
+   "ranked": [
+    "25",
+    "21",
+    "01",
+    "35",
+    "26"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "25",
+   "top1_forbidden": false,
+   "top1_cosine": 0.64
+  },
+  {
+   "id": "HB2-M03",
+   "hard_type": "multi_hop",
+   "expect": "answer",
+   "question": "转专业什么时候可以申请？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.6297,
+   "suggestions": [],
+   "expected": [
+    "02"
+   ],
+   "ranked": [
+    "02",
+    "01",
+    "24"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "02",
+   "top1_forbidden": false,
+   "top1_cosine": 0.6297
+  },
+  {
+   "id": "HB2-R01",
+   "hard_type": "regression",
+   "expect": "answer",
+   "question": "研究生学业奖学金的奖励标准是多少？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.6953,
+   "suggestions": [],
+   "expected": [
+    "21"
+   ],
+   "ranked": [
+    "21",
+    "17",
+    "20",
+    "25"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "21",
+   "top1_forbidden": false,
+   "top1_cosine": 0.6862
+  },
+  {
+   "id": "HB2-R02",
+   "hard_type": "regression",
+   "expect": "answer",
+   "question": "新生报到时如果发现录取材料与本人实际情况不符，会怎么处理？",
+   "decision": "rag",
+   "gate_ok": true,
+   "best_cosine": 0.599,
+   "suggestions": [],
+   "expected": [
+    "02",
+    "05"
+   ],
+   "ranked": [
+    "02",
+    "05",
+    "01"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "top1": "02",
+   "top1_forbidden": false,
+   "top1_cosine": 0.5221
+  }
+ ]
+}

@@ -1,0 +1,547 @@
+{
+ "summary": {
+  "metric_scope": "retrieval only (no query rewrite, no LLM generation)",
+  "topK": 8,
+  "threshold": 0.3,
+  "total": 20,
+  "hit@1": 0.95,
+  "hit@3": 1.0,
+  "hit@5": 1.0,
+  "mrr": 0.975,
+  "mean_top1_score": 0.7007,
+  "misses": [],
+  "by_style": {
+   "verbatim": {
+    "n": 10,
+    "hit@1": 0.9,
+    "hit@3": 1.0,
+    "mrr": 0.95
+   },
+   "paraphrase": {
+    "n": 10,
+    "hit@1": 1.0,
+    "hit@3": 1.0,
+    "mrr": 1.0
+   }
+  },
+  "generated_at": "2026-11-14T14:43:31"
+ },
+ "results": [
+  {
+   "id": "EVAL-HB-001",
+   "category": "综合测评",
+   "style": "verbatim",
+   "question": "学生素质综合测评由哪几部分构成？各占多少比例？",
+   "expected_source_ids": [
+    "06"
+   ],
+   "retrieved_chapters": [
+    "06"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.6758,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "06": 8
+   }
+  },
+  {
+   "id": "EVAL-HB-002",
+   "category": "服兵役资助",
+   "style": "verbatim",
+   "question": "应征入伍服兵役的学生，学费补偿和学费减免的标准是多少？",
+   "expected_source_ids": [
+    "24"
+   ],
+   "retrieved_chapters": [
+    "24",
+    "27",
+    "23"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7523,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "24": 4,
+    "27": 2,
+    "23": 2
+   }
+  },
+  {
+   "id": "EVAL-HB-003",
+   "category": "校级奖学金",
+   "style": "verbatim",
+   "question": "校级优秀学生奖学金一等奖和二等奖的金额与评定比例分别是多少？",
+   "expected_source_ids": [
+    "25"
+   ],
+   "retrieved_chapters": [
+    "25",
+    "16",
+    "31",
+    "38"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7206,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "25": 4,
+    "16": 2,
+    "31": 1,
+    "38": 1
+   }
+  },
+  {
+   "id": "EVAL-HB-004",
+   "category": "洪银兴奖学金",
+   "style": "verbatim",
+   "question": "洪银兴奖学金下设哪几个奖项？",
+   "expected_source_ids": [
+    "26"
+   ],
+   "retrieved_chapters": [
+    "26",
+    "25"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7872,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "26": 6,
+    "25": 2
+   }
+  },
+  {
+   "id": "EVAL-HB-005",
+   "category": "学费减免",
+   "style": "verbatim",
+   "question": "学费减免的一档标准是什么？面向哪些学生？",
+   "expected_source_ids": [
+    "27"
+   ],
+   "retrieved_chapters": [
+    "27",
+    "19",
+    "13",
+    "25",
+    "24"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.6784,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "27": 3,
+    "19": 1,
+    "13": 2,
+    "25": 1,
+    "24": 1
+   }
+  },
+  {
+   "id": "EVAL-HB-006",
+   "category": "临时困难补助",
+   "style": "verbatim",
+   "question": "临时困难补助的经费主要来源于哪里？",
+   "expected_source_ids": [
+    "28"
+   ],
+   "retrieved_chapters": [
+    "28",
+    "29",
+    "13",
+    "30"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7246,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "28": 3,
+    "29": 2,
+    "13": 2,
+    "30": 1
+   }
+  },
+  {
+   "id": "EVAL-HB-007",
+   "category": "寒衣被补助",
+   "style": "verbatim",
+   "question": "困难新生寒衣被补助的资助比例和标准是什么？",
+   "expected_source_ids": [
+    "29"
+   ],
+   "retrieved_chapters": [
+    "29",
+    "28",
+    "19"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7652,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "29": 2,
+    "28": 3,
+    "19": 3
+   }
+  },
+  {
+   "id": "EVAL-HB-008",
+   "category": "学生申诉",
+   "style": "verbatim",
+   "question": "学生申诉处理委员会由多少名委员组成？",
+   "expected_source_ids": [
+    "36"
+   ],
+   "retrieved_chapters": [
+    "36",
+    "35",
+    "01",
+    "03",
+    "17"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.6874,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "36": 3,
+    "35": 2,
+    "01": 1,
+    "03": 1,
+    "17": 1
+   }
+  },
+  {
+   "id": "EVAL-HB-009",
+   "category": "第二课堂",
+   "style": "verbatim",
+   "question": "本科生毕业需要修满多少第二课堂学分？专升本学生呢？",
+   "expected_source_ids": [
+    "37"
+   ],
+   "retrieved_chapters": [
+    "38",
+    "37"
+   ],
+   "rank": 2,
+   "hit@1": false,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7021,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "38": 6,
+    "37": 2
+   }
+  },
+  {
+   "id": "EVAL-HB-010",
+   "category": "研究生学业奖学金",
+   "style": "verbatim",
+   "question": "研究生学业奖学金的奖励标准是多少？",
+   "expected_source_ids": [
+    "21"
+   ],
+   "retrieved_chapters": [
+    "21",
+    "20",
+    "17"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.6932,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "21": 3,
+    "20": 1,
+    "17": 4
+   }
+  },
+  {
+   "id": "EVAL-HB-011",
+   "category": "新生入学资格审查",
+   "style": "paraphrase",
+   "question": "新生报到时如果发现录取材料与本人实际情况不符，会怎么处理？",
+   "expected_source_ids": [
+    "05"
+   ],
+   "retrieved_chapters": [
+    "05",
+    "02",
+    "01"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.6107,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "05": 5,
+    "02": 2,
+    "01": 1
+   }
+  },
+  {
+   "id": "EVAL-HB-012",
+   "category": "重修",
+   "style": "paraphrase",
+   "question": "我期末考试不及格、补考也没过，这门必修课最多还能重修几次？",
+   "expected_source_ids": [
+    "08"
+   ],
+   "retrieved_chapters": [
+    "08",
+    "02",
+    "01"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7386,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "08": 2,
+    "02": 4,
+    "01": 2
+   }
+  },
+  {
+   "id": "EVAL-HB-013",
+   "category": "学生档案",
+   "style": "paraphrase",
+   "question": "新生的个人档案到了学校之后由谁集中保管？",
+   "expected_source_ids": [
+    "12"
+   ],
+   "retrieved_chapters": [
+    "12",
+    "05"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7019,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "12": 7,
+    "05": 1
+   }
+  },
+  {
+   "id": "EVAL-HB-014",
+   "category": "生活物价补贴",
+   "style": "paraphrase",
+   "question": "每个月发到学生卡里的生活物价补贴是多少钱？",
+   "expected_source_ids": [
+    "13"
+   ],
+   "retrieved_chapters": [
+    "13",
+    "28",
+    "27",
+    "30"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7469,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "13": 2,
+    "28": 3,
+    "27": 2,
+    "30": 1
+   }
+  },
+  {
+   "id": "EVAL-HB-015",
+   "category": "出国交流",
+   "style": "paraphrase",
+   "question": "出国交流到了国外，第一件要报备的事情是什么？",
+   "expected_source_ids": [
+    "14"
+   ],
+   "retrieved_chapters": [
+    "14",
+    "05",
+    "02",
+    "10",
+    "24",
+    "22"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.6021,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "14": 2,
+    "05": 1,
+    "02": 1,
+    "10": 2,
+    "24": 1,
+    "22": 1
+   }
+  },
+  {
+   "id": "EVAL-HB-016",
+   "category": "生源地助学贷款",
+   "style": "paraphrase",
+   "question": "家里经济困难，想申请生源地信用助学贷款，哪些人能申请？",
+   "expected_source_ids": [
+    "22"
+   ],
+   "retrieved_chapters": [
+    "22",
+    "15",
+    "19"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7444,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "22": 6,
+    "15": 1,
+    "19": 1
+   }
+  },
+  {
+   "id": "EVAL-HB-017",
+   "category": "基层就业补偿",
+   "style": "paraphrase",
+   "question": "毕业后去基层单位工作，要干满几年才能拿到学费补偿？",
+   "expected_source_ids": [
+    "23"
+   ],
+   "retrieved_chapters": [
+    "23",
+    "24"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.7241,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "23": 6,
+    "24": 2
+   }
+  },
+  {
+   "id": "EVAL-HB-018",
+   "category": "三好学生",
+   "style": "paraphrase",
+   "question": "三好学生大概按什么比例评选？",
+   "expected_source_ids": [
+    "31"
+   ],
+   "retrieved_chapters": [
+    "31",
+    "33",
+    "34",
+    "25"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.6772,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "31": 4,
+    "33": 2,
+    "34": 1,
+    "25": 1
+   }
+  },
+  {
+   "id": "EVAL-HB-019",
+   "category": "优秀毕业生",
+   "style": "paraphrase",
+   "question": "优秀毕业生占应届毕业生总数的多少？",
+   "expected_source_ids": [
+    "33"
+   ],
+   "retrieved_chapters": [
+    "33",
+    "31",
+    "25",
+    "07",
+    "23"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.6224,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "33": 2,
+    "31": 2,
+    "25": 1,
+    "07": 1,
+    "23": 2
+   }
+  },
+  {
+   "id": "EVAL-HB-020",
+   "category": "学位授予",
+   "style": "paraphrase",
+   "question": "我们学校可以授予哪些学科门类的学士学位？",
+   "expected_source_ids": [
+    "03"
+   ],
+   "retrieved_chapters": [
+    "03",
+    "04",
+    "02",
+    "37"
+   ],
+   "rank": 1,
+   "hit@1": true,
+   "hit@3": true,
+   "hit@5": true,
+   "top1_score": 0.6591,
+   "num_chunks": 8,
+   "chunks_per_chapter": {
+    "03": 5,
+    "04": 1,
+    "02": 1,
+    "37": 1
+   }
+  }
+ ]
+}
