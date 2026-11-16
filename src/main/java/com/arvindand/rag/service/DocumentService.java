@@ -3,13 +3,14 @@ package com.arvindand.rag.service;
 import com.arvindand.rag.model.DocumentUploadResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.reader.markdown.MarkdownDocumentReader;
-import org.springframework.ai.reader.markdown.config.MarkdownDocumentReaderConfig;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -34,13 +35,15 @@ public class DocumentService {
   static final String META_DOCUMENT_ID = "document_id";
   static final String META_FILENAME = "filename";
   static final String META_SOURCE = "source";
+  static final String META_CHAPTER = "chapter";
+  static final String META_ARTICLE = "article";
 
   private final VectorStore vectorStore;
 
-  // Smaller chunks than the 800-token default: each topic embeds sharply, which
-  // markedly improves retrieval recall on short, multi-topic documents.
+  // 500-token chunks: the default 800 is too coarse for regulation text, while the
+  // original 200 split single articles apart and lost the surrounding context.
   private final TokenTextSplitter textSplitter =
-      TokenTextSplitter.builder().withChunkSize(200).withMinChunkSizeChars(100).build();
+      TokenTextSplitter.builder().withChunkSize(500).withMinChunkSizeChars(200).build();
 
   public DocumentService(VectorStore vectorStore) {
     this.vectorStore = vectorStore;
@@ -78,20 +81,60 @@ public class DocumentService {
   /**
    * The single ingestion pipeline shared by every entry point: read, tag, split, store.
    *
+   * <p>Markdown and plain text are split on article boundaries (第X条) and every chunk is prefixed
+   * with its chapter title, so a retrieved fragment still says which regulation it belongs to. PDFs
+   * have no reliable article structure, so they keep the token splitter.
+   *
    * @return the number of chunks written to the vector store
    */
   int ingest(Resource resource, String filename, String documentId) {
     List<Document> documents = read(resource, filename);
+    boolean structured = !"pdf".equals(extensionOf(filename));
+    String title =
+        documents.isEmpty()
+            ? filename
+            : StructuralTextSplitter.titleOf(documents.get(0).getText(), filename);
+
+    List<Document> chunks =
+        structured ? structuralChunks(documents, filename, documentId, title) : tokenChunks(documents, filename, documentId);
+
+    // Some OpenAI-compatible embedding providers (e.g. Alibaba Cloud Bailian /
+    // DashScope) reject requests carrying more than 10 inputs, so embed in
+    // small batches instead of sending every chunk at once.
+    int batchSize = 10;
+    for (int start = 0; start < chunks.size(); start += batchSize) {
+      int end = Math.min(start + batchSize, chunks.size());
+      vectorStore.add(chunks.subList(start, end));
+    }
+    return chunks.size();
+  }
+
+  private List<Document> structuralChunks(
+      List<Document> documents, String filename, String documentId, String title) {
+    List<Document> chunks = new ArrayList<>();
+    for (Document doc : documents) {
+      for (String piece : StructuralTextSplitter.split(doc.getText())) {
+        Map<String, Object> metadata = new HashMap<>(doc.getMetadata());
+        metadata.put(META_DOCUMENT_ID, documentId);
+        metadata.put(META_FILENAME, filename);
+        metadata.put(META_SOURCE, filename);
+        metadata.put(META_CHAPTER, title);
+        metadata.put(META_ARTICLE, StructuralTextSplitter.articleOf(piece));
+        chunks.add(new Document("【" + title + "】\n" + piece, metadata));
+      }
+    }
+    return chunks;
+  }
+
+  private List<Document> tokenChunks(
+      List<Document> documents, String filename, String documentId) {
     documents.forEach(
         doc -> {
           doc.getMetadata().put(META_DOCUMENT_ID, documentId);
           doc.getMetadata().put(META_FILENAME, filename);
           doc.getMetadata().put(META_SOURCE, filename);
         });
-
-    List<Document> chunks = textSplitter.apply(documents);
-    vectorStore.add(chunks);
-    return chunks.size();
+    return textSplitter.apply(documents);
   }
 
   /** Selects a reader based on the file extension; anything unknown is treated as plain text. */
@@ -99,8 +142,8 @@ public class DocumentService {
     try {
       return switch (extensionOf(filename)) {
         case "pdf" -> new PagePdfDocumentReader(resource).get();
-        case "md", "markdown" ->
-            new MarkdownDocumentReader(resource, MarkdownDocumentReaderConfig.defaultConfig()).get();
+        // Split Markdown ourselves so article boundaries survive; the Markdown reader
+        // would hand back headed blocks we still had to token-split anyway.
         default -> List.of(new Document(resource.getContentAsString(StandardCharsets.UTF_8)));
       };
     } catch (IOException | RuntimeException e) {

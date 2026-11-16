@@ -2,6 +2,10 @@ spring:
   application:
     name: spring-ai-rag-demo
 
+  # Optional .env next to the working directory; real environment variables win.
+  config:
+    import: "optional:file:${ENV_FILE:.env}[.properties]"
+
   # Virtual threads (Java 21+) for the blocking web/JDBC workload
   threads:
     virtual:
@@ -23,20 +27,27 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
-  # Database configuration (for chat memory)
+  # Database configuration (chat memory + vectors)
   datasource:
-    url: jdbc:postgresql://localhost:5432/ragdemo
-    username: user
-    password: password
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ragdemo}
+    username: ${DB_USER:user}
+    password: ${DB_PASSWORD:password}
 
-  # Spring AI Configuration
+  # Spring AI Configuration.
+  # Any OpenAI-compatible endpoint works: only the LLM_* values need to change.
   ai:
-    # OpenAI settings
     openai:
-      api-key: ${OPENAI_API_KEY}
+      api-key: ${LLM_API_KEY:${DASHSCOPE_API_KEY:${OPENAI_API_KEY:not-set}}}
+      # OpenAI-compatible base URL, including the version path.
+      base-url: ${LLM_BASE_URL:https://api.openai.com/v1}
       chat:
-        model: gpt-4o-mini
-        temperature: 0.7
+        model: ${LLM_CHAT_MODEL:gpt-4o-mini}
+        temperature: ${LLM_TEMPERATURE:0.7}
+      embedding:
+        model: ${LLM_EMBEDDING_MODEL:text-embedding-3-small}
+        options:
+          # Must match the pgvector column and the dump you start from.
+          dimensions: ${LLM_EMBEDDING_DIMENSIONS:1536}
 
     # Vector store settings
     vectorstore:
@@ -44,7 +55,7 @@ spring:
         initialize-schema: true
         index-type: HNSW
         distance-type: COSINE_DISTANCE
-        dimensions: 1536
+        dimensions: ${LLM_EMBEDDING_DIMENSIONS:1536}
 
     # Chat memory settings
     chat:
@@ -56,6 +67,18 @@ spring:
 # Server configuration
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        # Cross-site POSTs then cannot carry the session, which is why CSRF is disabled.
+        same-site: lax
+
+# Single-account login. APP_PASSWORD must be set before exposing the service.
+app:
+  security:
+    username: ${APP_USERNAME:admin}
+    password: ${APP_PASSWORD:changeme}
 
 # Actuator endpoints
 management:

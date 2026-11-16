@@ -1,5 +1,7 @@
 package com.arvindand.rag.config;
 
+import com.arvindand.rag.service.HybridDocumentRetriever;
+import com.arvindand.rag.service.HybridRetriever;
 import com.arvindand.rag.tools.DocumentTools;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -7,8 +9,8 @@ import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.rag.preretrieval.query.transformation.RewriteQueryTransformer;
-import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,13 +33,33 @@ public class ChatClientConfig {
 
   private static final String DEFAULT_SYSTEM_PROMPT =
       """
-      You are a helpful AI assistant with access to a knowledge base of documents.
-      When answering questions:
-      1. Use information from the provided context when available
-      2. Be precise and cite specific details from documents
-      3. If the context doesn't contain relevant information, say so clearly
-      4. Provide structured, easy-to-read responses
+      你是贵州财经大学学生手册问答助手。严格遵守以下规则：
+      1. 只依据给出的【参考资料】回答，不引用外部知识，不猜测，不编造条文、金额、比例或时限。
+      2. 先给结论，再给依据，并注明出自哪一章；资料里有条号就写条号。
+      3. 如果参考资料不足以回答，直接说明"《贵州财经大学学生手册》中没有查到与此相关的明确规定"，
+         再列出参考资料中最接近的 1-3 个章节供参考，并建议咨询辅导员或学生工作部（处）。
+      4. 用简洁的中文回答；金额、比例、期限、次数必须与原文完全一致。
       """;
+
+  // Retrieval knobs measured against the 20-question handbook evaluation set.
+  @Value("${rag.retrieval.mode:hybrid_rerank}")
+  private String retrievalMode;
+
+  @Value("${rag.retrieval.top-k:6}")
+  private int retrievalTopK;
+
+  @Value("${rag.retrieval.candidates:40}")
+  private int retrievalCandidates;
+
+  @Value("${rag.retrieval.threshold:0.3}")
+  private double retrievalThreshold;
+
+  /**
+   * Query rewriting costs one extra chat-model round trip. Hybrid recall already reaches hit@1 1.00
+   * on the evaluation set without it, so it is off by default and can be re-enabled per deployment.
+   */
+  @Value("${rag.retrieval.rewrite:false}")
+  private boolean rewriteQuery;
 
   /**
    * Creates a ChatClient with modular RAG pipeline and conversation memory.
@@ -46,7 +68,7 @@ public class ChatClientConfig {
    *
    * <ul>
    *   <li>{@link RewriteQueryTransformer} - Rewrites user queries for better retrieval
-   *   <li>{@link VectorStoreDocumentRetriever} - Retrieves relevant documents
+   *   <li>{@link HybridDocumentRetriever} - Dense + trigram recall fused with RRF
    *   <li>{@link MessageChatMemoryAdvisor} - Maintains conversation history
    * </ul>
    */
@@ -55,9 +77,10 @@ public class ChatClientConfig {
       ChatClient.Builder chatClientBuilder,
       VectorStore vectorStore,
       ChatMemory chatMemory,
-      DocumentTools documentTools) {
+      DocumentTools documentTools,
+      HybridRetriever hybridRetriever) {
 
-    return ragClientBuilder(chatClientBuilder, vectorStore, documentTools)
+    return ragClientBuilder(chatClientBuilder, vectorStore, documentTools, hybridRetriever)
         .defaultSystem(DEFAULT_SYSTEM_PROMPT)
         .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
         .build();
@@ -66,30 +89,36 @@ public class ChatClientConfig {
   /** RAG client for /v1, where the caller supplies the complete conversation on every request. */
   @Bean
   ChatClient statelessRagChatClient(
-      ChatClient.Builder chatClientBuilder, VectorStore vectorStore, DocumentTools documentTools) {
-    return ragClientBuilder(chatClientBuilder, vectorStore, documentTools).build();
+      ChatClient.Builder chatClientBuilder,
+      VectorStore vectorStore,
+      DocumentTools documentTools,
+      HybridRetriever hybridRetriever) {
+    return ragClientBuilder(chatClientBuilder, vectorStore, documentTools, hybridRetriever).build();
   }
 
   private ChatClient.Builder ragClientBuilder(
-      ChatClient.Builder chatClientBuilder, VectorStore vectorStore, DocumentTools documentTools) {
+      ChatClient.Builder chatClientBuilder,
+      VectorStore vectorStore,
+      DocumentTools documentTools,
+      HybridRetriever hybridRetriever) {
 
-    // Build the modular RAG advisor with query transformation
-    var ragAdvisor =
+    // Build the modular RAG advisor with optional query transformation
+    var advisorBuilder =
         RetrievalAugmentationAdvisor.builder()
-            .queryTransformers(
-                RewriteQueryTransformer.builder()
-                    .chatClientBuilder(chatClientBuilder.clone())
-                    .build())
+            // Hybrid recall (dense + trigram RRF) instead of dense-only. Measured on the
+            // 20-question handbook set: dense-only hit@1 0.95, hybrid 1.00.
             .documentRetriever(
-                VectorStoreDocumentRetriever.builder()
-                    .vectorStore(vectorStore)
-                    // 0.3 keeps recall high for a small curated knowledge base; cosine
-                    // similarities from text-embedding-3-small rarely exceed ~0.5 even for
-                    // strong topical matches, so 0.5 was filtering out valid context.
-                    .similarityThreshold(0.3)
-                    .topK(5)
-                    .build())
-            .build();
+                new HybridDocumentRetriever(
+                    hybridRetriever,
+                    retrievalMode,
+                    retrievalTopK,
+                    retrievalCandidates,
+                    retrievalThreshold));
+    if (rewriteQuery) {
+      advisorBuilder.queryTransformers(
+          RewriteQueryTransformer.builder().chatClientBuilder(chatClientBuilder.clone()).build());
+    }
+    var ragAdvisor = advisorBuilder.build();
 
     return chatClientBuilder
         .clone()

@@ -1,0 +1,30 @@
+# DashScope (阿里云百炼) preset -- an OpenAI-compatible endpoint.
+#
+# Activate with:  --spring.profiles.active=aliyun
+# This file only supplies that provider's defaults. Every value can still be overridden
+# from the environment / .env, so the same jar can talk to any OpenAI-compatible model by
+# changing LLM_BASE_URL / LLM_CHAT_MODEL / LLM_EMBEDDING_MODEL.
+#
+# The key is read from the environment or .env so it never lives in this repo:
+#   LLM_API_KEY=sk-...        (or DASHSCOPE_API_KEY / OPENAI_API_KEY)
+spring:
+  ai:
+    openai:
+      # OpenAI-compatible mode, Beijing region. The SDK base-url INCLUDES the version path.
+      base-url: ${LLM_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode/v1}
+      chat:
+        model: ${LLM_CHAT_MODEL:qwen3.7-plus}
+      embedding:
+        model: ${LLM_EMBEDDING_MODEL:text-embedding-v4}
+        options:
+          # text-embedding-v4 defaults to 1024; must match the pgvector column width.
+          dimensions: ${LLM_EMBEDDING_DIMENSIONS:1536}
+
+# DashScope also offers a cross-encoder reranker. Other providers usually do not, so set
+# RERANK_ENABLED=false there; retrieval then falls back to the fused RRF order.
+rag:
+  rerank:
+    enabled: ${RERANK_ENABLED:true}
+    url: ${RERANK_URL:https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank}
+    model: ${RERANK_MODEL:gte-rerank-v2}
+    api-key: ${RERANK_API_KEY:${LLM_API_KEY:${DASHSCOPE_API_KEY:}}}

@@ -1,5 +1,6 @@
 package com.arvindand.rag.tools;
 
+import com.arvindand.rag.service.HybridRetriever;
 import java.util.List;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.tool.annotation.Tool;
@@ -23,19 +24,22 @@ import org.springframework.stereotype.Component;
 public class DocumentTools {
 
   private final VectorStore vectorStore;
+  private final HybridRetriever hybridRetriever;
 
-  public DocumentTools(VectorStore vectorStore) {
+  public DocumentTools(VectorStore vectorStore, HybridRetriever hybridRetriever) {
     this.vectorStore = vectorStore;
+    this.hybridRetriever = hybridRetriever;
   }
 
   /**
    * Searches the document knowledge base for relevant information.
    *
-   * <p>Use this tool when you need to find specific information from the uploaded documents that
-   * isn't already in the conversation context.
+   * <p>Uses the same hybrid recall as the main pipeline. A retrieval failure is reported back to
+   * the model as plain text instead of throwing, so the conversation degrades to whatever context
+   * the advisor already provided rather than failing the whole request.
    *
    * @param query The search query describing what information to find
-   * @param maxResults Maximum number of results to return (default: 5)
+   * @param maxResults Maximum number of results to return (default: 5, clamped to 1..20)
    * @return Relevant document excerpts matching the query
    */
   @Tool(
@@ -48,24 +52,29 @@ public class DocumentTools {
       @ToolParam(description = "Maximum number of results to return", required = false)
           Integer maxResults) {
 
-    int limit = maxResults != null ? maxResults : 5;
-
-    List<Document> results =
-        vectorStore.similaritySearch(SearchRequest.builder().query(query).topK(limit).build());
-
-    if (results.isEmpty()) {
-      return "No relevant documents found for: " + query;
+    int limit = maxResults == null ? 5 : Math.max(1, Math.min(20, maxResults));
+    try {
+      var hits = hybridRetriever.retrieve(query, limit, 20, "hybrid", 0.0);
+      if (hits.isEmpty()) {
+        return "No relevant documents found for: " + query;
+      }
+      StringBuilder sb = new StringBuilder("Found " + hits.size() + " relevant documents:\n\n");
+      for (int i = 0; i < hits.size(); i++) {
+        var hit = hits.get(i);
+        sb.append("--- Document ")
+            .append(i + 1)
+            .append(" (")
+            .append(hit.chapter().isBlank() ? hit.source() : hit.chapter())
+            .append(hit.article().isBlank() ? "" : " " + hit.article())
+            .append(") ---\n");
+        sb.append(hit.content()).append("\n\n");
+      }
+      return sb.toString();
+    } catch (RuntimeException e) {
+      return "Document search is temporarily unavailable ("
+          + e.getClass().getSimpleName()
+          + "). Answer from the context already provided, and say so if that context is insufficient.";
     }
-
-    StringBuilder sb = new StringBuilder("Found " + results.size() + " relevant documents:\n\n");
-    for (int i = 0; i < results.size(); i++) {
-      Document doc = results.get(i);
-      String source = (String) doc.getMetadata().getOrDefault("source", "unknown");
-      sb.append("--- Document ").append(i + 1).append(" (").append(source).append(") ---\n");
-      sb.append(doc.getText()).append("\n\n");
-    }
-
-    return sb.toString();
   }
 
   /**

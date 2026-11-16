@@ -33,7 +33,10 @@ public class ChatResponseReader {
     return text == null ? "" : text;
   }
 
-  /** Returns the sorted, distinct source filenames cited for a response (empty if none). */
+  /**
+   * Returns the distinct source filenames cited for a response (empty if none), in retrieval order
+   * so callers can tell which document ranked first.
+   */
   public List<String> sources(ChatClientResponse response) {
     if (!(response.context().get(RetrievalAugmentationAdvisor.DOCUMENT_CONTEXT)
         instanceof List<?> documents)) {
@@ -47,7 +50,6 @@ public class ChatResponseReader {
         .map(Object::toString)
         .map(ChatResponseReader::filenameOf)
         .distinct()
-        .sorted()
         .toList();
   }
 
