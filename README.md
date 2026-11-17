@@ -77,6 +77,9 @@ docker exec ragdemo-pgvector psql -U user -d ragdemo -t -c "select count(*) from
 > **拉不动镜像**（国内常见）：在 `.env` 里取消镜像代理那几行的注释，例如
 > `NODE_IMAGE=docker.m.daocloud.io/library/node:22-alpine`，再重新
 > `docker compose up -d --build`。数据库镜像同理用 `PGVECTOR_IMAGE` 覆盖。
+>
+> **首次构建卡在下载依赖**：Maven Central 在国内可能只有 30 kB/s，几百 MB 要下很久。
+> 在 `.env` 里设 `MAVEN_MIRROR_URL=https://maven.aliyun.com/repository/public` 即可提速。
 
 ## 换模型
 

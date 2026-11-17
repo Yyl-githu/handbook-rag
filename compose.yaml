@@ -11,6 +11,7 @@ services:
         NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
         JDK_IMAGE: ${JDK_IMAGE:-eclipse-temurin:25-jdk}
         RUNTIME_IMAGE: ${RUNTIME_IMAGE:-eclipse-temurin:25-jre}
+        MAVEN_MIRROR_URL: ${MAVEN_MIRROR_URL:-}
     image: handbook-rag:3.0.1
     container_name: ragdemo-app
     # Everything from .env is handed to the container: LLM_*, APP_*, RERANK_* ...

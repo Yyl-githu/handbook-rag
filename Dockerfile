@@ -16,6 +16,10 @@
 ARG NODE_IMAGE=node:22-alpine
 ARG JDK_IMAGE=eclipse-temurin:25-jdk
 ARG RUNTIME_IMAGE=eclipse-temurin:25-jre
+# Optional Maven mirror. Maven Central can be very slow from mainland China; set it to
+# https://maven.aliyun.com/repository/public to cut the first build from tens of minutes
+# to a couple of minutes.
+ARG MAVEN_MIRROR_URL=
 
 # ---------- 1. frontend ----------
 FROM ${NODE_IMAGE} AS web
@@ -29,13 +33,21 @@ RUN npm run build
 # ---------- 2. backend ----------
 FROM ${JDK_IMAGE} AS build
 WORKDIR /src
+ARG MAVEN_MIRROR_URL
 # unzip is needed by the Maven wrapper (distributionType=only-script)
 RUN apt-get update \
  && apt-get install -y --no-install-recommends unzip \
  && rm -rf /var/lib/apt/lists/*
+# Point Maven at a mirror before the wrapper downloads anything.
+RUN if [ -n "$MAVEN_MIRROR_URL" ]; then \
+      mkdir -p /root/.m2 && \
+      printf '<settings><mirrors><mirror><id>mirror</id><mirrorOf>*</mirrorOf><url>%s</url></mirror></mirrors></settings>' \
+        "$MAVEN_MIRROR_URL" > /root/.m2/settings.xml && \
+      echo "Maven mirror: $MAVEN_MIRROR_URL"; \
+    fi
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
-RUN chmod +x mvnw && ./mvnw -B -q -DskipTests dependency:go-offline || true
+RUN chmod +x mvnw && ./mvnw -B -DskipTests dependency:go-offline || true
 COPY src/ src/
 # generated assets come from the frontend stage, never from the working tree
 RUN rm -rf src/main/resources/static
