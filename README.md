@@ -74,6 +74,10 @@ docker exec ragdemo-pgvector psql -U user -d ragdemo -t -c "select count(*) from
 # 208
 ```
 
+> **拉不动镜像**（国内常见）：在 `.env` 里取消镜像代理那几行的注释，例如
+> `NODE_IMAGE=docker.m.daocloud.io/library/node:22-alpine`，再重新
+> `docker compose up -d --build`。数据库镜像同理用 `PGVECTOR_IMAGE` 覆盖。
+
 ## 换模型
 
 只要能提供 **OpenAI 兼容接口 + embedding 接口**，改 `.env` 即可，不用改代码、不用重建镜像：

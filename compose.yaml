@@ -5,6 +5,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Override in .env when Docker Hub is unreachable, e.g.
+      #   NODE_IMAGE=docker.m.daocloud.io/library/node:22-alpine
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
+        JDK_IMAGE: ${JDK_IMAGE:-eclipse-temurin:25-jdk}
+        RUNTIME_IMAGE: ${RUNTIME_IMAGE:-eclipse-temurin:25-jre}
     image: handbook-rag:3.0.1
     container_name: ragdemo-app
     # Everything from .env is handed to the container: LLM_*, APP_*, RERANK_* ...
@@ -36,7 +42,7 @@ services:
   # PostgreSQL + pgvector. The first start imports db/ragdemo.dump, so a fresh clone
   # already has the 208 handbook chunks instead of an empty database.
   pgvector:
-    image: "pgvector/pgvector:0.8.7-pg17"
+    image: "${PGVECTOR_IMAGE:-pgvector/pgvector:0.8.7-pg17}"
     container_name: ragdemo-pgvector
     environment:
       - "POSTGRES_DB=ragdemo"
